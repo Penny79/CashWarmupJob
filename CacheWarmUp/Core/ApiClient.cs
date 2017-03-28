@@ -3,6 +3,7 @@ using RestSharp;
 using RestSharp.Extensions.MonoHttp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace CacheWarmUp.Core
 {
     /// <summary>
-    /// Implements the basic calls ´to the rest api
+    /// Implements the basic calls to the esales rest api
     /// </summary>
     public class ApiClient
     {
@@ -23,7 +24,8 @@ namespace CacheWarmUp.Core
         private string username;
         private string password;
 
-        private RestClient client;
+
+        private readonly RestClient client;
 
         #endregion
 
@@ -39,8 +41,6 @@ namespace CacheWarmUp.Core
             client.CookieContainer = new System.Net.CookieContainer();
         }
 
-      
-
         #endregion
 
         #region interface
@@ -53,15 +53,13 @@ namespace CacheWarmUp.Core
             request.AddParameter("portal", "APPC");
             request.AddHeader("content-type", "application/x-www-form-urlencoded");
 
-            var response = client.Execute(request);
-
-
+            var response = client.Execute(request);            
         }
 
         public IEnumerable<BusinessPartner> ListBusinessPartners()
         {
             var request = new RestRequest("appc-api/restricted/configuration/customer/businessPartners/selection", Method.GET);
-        
+
             var response = client.Execute<RootObject>(request);
 
             return response.Data.selectable.ELECTRICITY.Union(response.Data.selectable.GAS);           
@@ -80,7 +78,7 @@ namespace CacheWarmUp.Core
         {
             var request = new RestRequest("appc-api/restricted/configuration/customer/businessPartners/selection", Method.GET);
 
-            var response = client.Execute<RootObject>(request);
+            var response =  client.Execute<RootObject>(request);
 
             return response.Data.selected;
         }
